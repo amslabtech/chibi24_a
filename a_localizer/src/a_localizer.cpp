@@ -56,7 +56,7 @@ EMCL::EMCL(): Node("emcl") //,engine_(seed_gen_())
     this -> get_parameter<double>("expansion_yaw_dev",expansion_yaw_dev_);
     this -> get_parameter<int>("laser_step",laser_step_);
     this -> get_parameter<double>("sensor_noise_ratio",sensor_noise_ratio_);
-    this -> get_parameter<double>("ignore_angle_range_list",ignore_angle_range_list_);     
+    this -> get_parameter<std::vector<double>>("ignore_angle_range_list",ignore_angle_range_list_);     
 
     // ROS2のパラメータの取得(OdomModel)
     this -> get_parameter<double>("ff",ff_);
@@ -145,7 +145,7 @@ void EMCL::process()
             }
         }
         // ros::spinOnce();
-        rclcpp::spin_some(Node);   // コールバック関数の実行
+        rclcpp::spin_some(node);   // コールバック関数の実行
         loop_rate.sleep(); // 周期が終わるまで待つ
     }
 }
@@ -472,7 +472,7 @@ void EMCL::resampling()
         accum.push_back(accum.back() + particles_[i].weight());
 
     // サンプリングのスタート位置とステップを設定
-    const std::vector<Particl> old(particles_);
+    const std::vector<Particle> old(particles_);
     const double step  = accum.back() / particles_.size();
     const double start = (double)rand()/RAND_MAX * step; // 0 ~ W/N (W: sum of weight)
 
@@ -512,7 +512,7 @@ void EMCL::publish_estimated_pose()
     q.setRPY(0, 0, estimated_pose_.yaw());
     tf2::convert(q, estimated_pose_msg_.pose.orientation);
 
-    pub_estimated_pose_.publish(estimated_pose_msg_);
+    pub_estimated_pose_->publish(estimated_pose_msg_);
 }
 
 // パーティクルクラウドのパブリッシュ
@@ -538,6 +538,6 @@ void EMCL::publish_particles()
             particle_cloud_msg_.poses.push_back(pose);
         }
 
-        pub_particle_cloud_.publish(particle_cloud_msg_);
+        pub_particle_cloud_->publish(particle_cloud_msg_);
     }
 }

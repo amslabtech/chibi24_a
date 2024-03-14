@@ -1,16 +1,21 @@
 #include "a_localizer/a_particle.hpp"
 
 // デフォルトコンストラクタ
-Particle::Particle() : pose_(0.0, 0.0, 0.0)
+// Particle::Particle() : pose_(0.0, 0.0, 0.0)
+Particle::Particle():Node("pose")
 {
+    pose_   = Pose(0.0, 0.0, 0.0);
     weight_ = 0.0;
 }
 
 // コンストラクタ
-Particle::Particle(const double x, const double y, const double yaw, const double weight) : pose_(x, y, yaw)
+// Particle::Particle(const double x, const double y, const double yaw, const double weight) : pose_(x, y, yaw)
+Particle::Particle(const double x, const double y, const double yaw, const double weight) : Node("pose")
 {
+    pose_   = Pose(x, y, yaw);
     weight_ = weight;
 }
+
 
 // 代入演算子
 Particle& Particle::operator =(const Particle& p)
@@ -96,7 +101,7 @@ double Particle::calc_dist_to_wall(double x, double y, const double laser_angle,
 }
 
 // 座標からグリッドのインデックスを返す
-int Particle::xy_to_grid_index(const double x, const double y, const nav_msgs:msg::MapMetaData& map_info)
+int Particle::xy_to_grid_index(const double x, const double y, const nav_msgs::msg::MapMetaData& map_info)
 {
     const int index_x = int(round((x - map_info.origin.position.x) / map_info.resolution));
     const int index_y = int(round((y - map_info.origin.position.y) / map_info.resolution));

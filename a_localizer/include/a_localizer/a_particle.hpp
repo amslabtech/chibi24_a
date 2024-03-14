@@ -4,9 +4,10 @@
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include "a_localizer/a_pose.hpp"
+#include <rclcpp/rclcpp.hpp>
 
 
-class Particl //: public rclcpp::Node
+class Particle : public rclcpp::Node
 {
 public:
     Particle(); // デフォルトコンストラクタ

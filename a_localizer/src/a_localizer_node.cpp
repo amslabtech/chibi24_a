@@ -4,7 +4,7 @@
 int main(int argc, char* argv[])
 {
     // ros::init(argc, argv, "localizer"); 
-    rclcpp::init(argc, argv, "localizer"); // ノードの初期化
+    rclcpp::init(argc, argv); // ノードの初期化
     EMCL emcl;
     emcl.process();
 

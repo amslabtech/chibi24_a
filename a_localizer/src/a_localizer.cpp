@@ -2,7 +2,7 @@
 emcl: mcl with expansion resetting
 */
 
-#include "localizer/localizer.hpp"
+#include "a_localizer/a_localizer.hpp"
 
 // コンストラクタ
 // EMCL::EMCL():private_nh_("~"), engine_(seed_gen_())
@@ -125,7 +125,7 @@ void EMCL::laser_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
 void EMCL::process()
 {
     //ros::Rate loop_rate(hz_); 
-    rclcpp::rate::Rate loop_rate(hz_); // 制御周波数の設定
+    rclcpp::Rate loop_rate(hz_); // 制御周波数の設定
     initialize();             // パーティクルの初期化
 
     // while(ros::ok())

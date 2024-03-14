@@ -1,5 +1,5 @@
-#ifndef ODOM_MODEL_H
-#define ODOM_MODEL_H
+#ifndef A_ODOM_MODEL_HPP
+#define A_ODOM_MODEL_HPP
 
 #include <random>
 
@@ -34,4 +34,4 @@ private:
     std::default_random_engine engine_;
 };
 
-#endif
+#endif  // A_ODOM_MODEL_HPP

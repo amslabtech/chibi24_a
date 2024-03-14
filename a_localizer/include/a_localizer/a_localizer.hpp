@@ -2,8 +2,8 @@
 emcl: mcl with expansion resetting
 */
 
-#ifndef LOCALIZER_H
-#define LOCALIZER_H
+#ifndef A_LOCALIZER_HPP
+#define A_LOCALIZER_HPP
 
 // #include <ros/ros.h>
 // #include <sensor_msgs/LaserScan.h>
@@ -32,9 +32,9 @@ emcl: mcl with expansion resetting
 // #include "localizer/odom_model.h"
 // #include "localizer/particle.h"
 // #include "localizer/pose.h"
-#include "localizer/odom_model.hpp"
-#include "localizer/particle.hpp"
-#include "localizer/pose.hpp"
+#include "a_localizer/a_odom_model.hpp"
+#include "a_localizer/a_particle.hpp"
+#include "a_localizer/a_pose.hpp"
 
 class EMCL : public rclcpp::Node
 {
@@ -163,4 +163,4 @@ private:
     geometry_msgs::msg::PoseArray   particle_cloud_msg_; // パーティクルクラウド（パブリッシュ用）
 };
 
-#endif  // LOCALIZER_H
+#endif  // A_LOCALIZER_H

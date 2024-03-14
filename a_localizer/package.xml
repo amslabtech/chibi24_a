@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<package format="2">
-  <name>localizer</name>
+<package format="3">
+  <name>a_localizer</name>
   <version>0.0.0</version>
   <description>The localizer package</description>
 

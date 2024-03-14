@@ -1,4 +1,4 @@
-#include "localizer/pose.hpp"
+#include "a_localizer/a_pose.hpp"
 
 // デフォルトコンストラクタ
 Pose::Pose()

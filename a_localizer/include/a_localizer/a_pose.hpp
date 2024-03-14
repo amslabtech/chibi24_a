@@ -8,8 +8,8 @@
  * @copyright Copyright (c) 2023
  * 
  */
-#ifndef POSE_H
-#define POSE_H
+#ifndef A_POSE_HPP
+#define A_POSE_HPP
 
 #include <cmath>
 
@@ -43,4 +43,4 @@ private:
     double yaw_; // [rad]
 };
 
-#endif
+#endif  // A_POSE_HPP

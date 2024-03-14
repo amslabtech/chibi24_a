@@ -1,9 +1,9 @@
-#ifndef PARTICLE_H
-#define PARTICLE_H
+#ifndef A_PARTICLE_HPP
+#define A_PARTICLE_HPP
 
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
-#include "localizer/pose.hpp"
+#include "a_localizer/a_pose.hpp"
 
 
 class Particl //: public rclcpp::Node
@@ -45,4 +45,4 @@ private:
     double weight_; // [-]
 };
 
-#endif
+#endif  // A_PARTICLE_HPP

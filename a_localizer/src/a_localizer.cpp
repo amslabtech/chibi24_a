@@ -37,7 +37,7 @@ EMCL::EMCL(): Node("emcl") //,engine_(seed_gen_())
     // private_nh_.getParam("rr", rr_);
 
     // ROS2のパラメータの取得(EMCL)
-    this -> declare_parameter<bool>("flag_init_noise",flag_init_noise_);
+    this -> get_parameter<bool>("flag_init_noise",flag_init_noise_);
     this -> get_parameter<bool>("flag_broadcast",flag_broadcast_);
     this -> get_parameter<bool>("is_visible",is_visible_);
     this -> get_parameter<int>("hz", hz_);

@@ -145,7 +145,8 @@ void EMCL::process()
             }
         }
         // ros::spinOnce();
-        rclcpp::spin_some(node);   // コールバック関数の実行
+        std::shared_ptr<EMCL> emcl = std::make_shared<EMCL>();
+        rclcpp::spin(emcl);  // コールバック関数の実行
         loop_rate.sleep(); // 周期が終わるまで待つ
     }
 }
@@ -202,7 +203,8 @@ void EMCL::broadcast_odom_state()
     if(flag_broadcast_)
     {
         // TF Broadcasterの実体化
-        static tf2_ros::TransformBroadcaster odom_state_broadcaster;
+        // static tf2_ros::TransformBroadcaster odom_state_broadcaster;
+        static tf2_ros::TransformBroadcaster odom_state_broadcaster(this);
 
         // map座標系からみたbase_link座標系の位置と姿勢の取得
         const double map_to_base_yaw = estimated_pose_.yaw();
@@ -233,7 +235,7 @@ void EMCL::broadcast_odom_state()
 
         // 現在の時間の格納
         // odom_state.header.stamp = ros::Time::now();
-        odom_state.header.stamp = rclcpp::Time::now();
+        odom_state.header.stamp = rclcpp::Clock(RCL_ROS_TIME).now();
 
         // 親フレーム・子フレームの指定
         odom_state.header.frame_id = map_.header.frame_id;
@@ -486,7 +488,8 @@ void EMCL::resampling()
             tick++;
             if(tick == particles_.size())
             {
-                ROS_ERROR("Resampling Failed"); // 配列の不正アクセス防止
+                //ROS_ERROR("Resampling Failed"); // 配列の不正アクセス防止
+                RCLCPP_ERROR(this->get_logger(), "Resampling Failed"); // 配列の不正アクセス防止
                 exit(1);
             }
         }

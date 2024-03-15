@@ -7,7 +7,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 
-class Particle : public rclcpp::Node
+class Particle // public rclcpp::Node
 {
 public:
     Particle(); // デフォルトコンストラクタ

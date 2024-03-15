@@ -2,7 +2,7 @@
 
 // デフォルトコンストラクタ
 // Particle::Particle() : pose_(0.0, 0.0, 0.0)
-Particle::Particle():Node("pose")
+Particle::Particle()//:Node("pose")
 {
     pose_   = Pose(0.0, 0.0, 0.0);
     weight_ = 0.0;
@@ -10,7 +10,7 @@ Particle::Particle():Node("pose")
 
 // コンストラクタ
 // Particle::Particle(const double x, const double y, const double yaw, const double weight) : pose_(x, y, yaw)
-Particle::Particle(const double x, const double y, const double yaw, const double weight) : Node("pose")
+Particle::Particle(const double x, const double y, const double yaw, const double weight) //: Node("pose")
 {
     pose_   = Pose(x, y, yaw);
     weight_ = weight;

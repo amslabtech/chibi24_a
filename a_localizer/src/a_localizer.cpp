@@ -513,7 +513,7 @@ void EMCL::publish_estimated_pose()
     // yawからquaternionを作成
     tf2::Quaternion q;
     q.setRPY(0, 0, estimated_pose_.yaw());
-    tf2::convert(q, estimated_pose_msg_.pose.orientation);
+    tf2::convert(q,estimated_pose_msg_.pose.orientation);
 
     pub_estimated_pose_->publish(estimated_pose_msg_);
 }
@@ -536,7 +536,7 @@ void EMCL::publish_particles()
             // yawからquaternionを作成
             tf2::Quaternion q;
             q.setRPY(0, 0, particle.pose_.yaw());
-            tf2::convert(q, pose.orientation);
+            tf2::convert(q,pose.orientation);
 
             particle_cloud_msg_.poses.push_back(pose);
         }

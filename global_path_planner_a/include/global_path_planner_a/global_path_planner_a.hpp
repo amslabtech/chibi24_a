@@ -112,7 +112,10 @@ class Astar : public rclcpp::Node
         //auto node = rclcpp::Node_::make_shared("nh_");
         //auto node = rclcpp::Node_::make_shared("private_nh_");
 
+        // Subscriber
         rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr sub_map_;
+        
+        // Publisher
         rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr pub_path_;
         rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr pub_node_point_;
         rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr pub_current_path_;

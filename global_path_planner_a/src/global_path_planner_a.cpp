@@ -522,9 +522,9 @@ void Astar::process()
 {
     RCLCPP_INFO(get_logger(), "process is starting...");
 
-    if(!map_checker_){}
+    if(!map_checker_){
     RCLCPP_INFO(get_logger(), "NOW LOADING...");
-    else
+    }else
     {
         printf("start\n");
         obs_expander(); //壁の判定

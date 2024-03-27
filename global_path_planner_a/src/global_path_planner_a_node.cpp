@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
     while(rclcpp::ok())
     {
         astar->process();
-        rclcpp::spin_some(astar_);
+        rclcpp::spin_some(astar);
         loop_rate.sleep();
     }
     rclcpp::shutdown();

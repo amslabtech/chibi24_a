@@ -5,13 +5,7 @@ emcl: mcl with expansion resetting
 #ifndef A_LOCALIZER_HPP
 #define A_LOCALIZER_HPP
 
-// #include <ros/ros.h>
-// #include <sensor_msgs/LaserScan.h>
-// #include <nav_msgs/OccupancyGrid.h>
-// #include <nav_msgs/Odometry.h>
-// #include <geometry_msgs/Pose.h>
-// #include <geometry_msgs/PoseStamped.h>
-// #include <geometry_msgs/PoseArray.h>
+
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <nav_msgs/msg/occupancy_grid.hpp>
@@ -27,13 +21,9 @@ emcl: mcl with expansion resetting
 
 #include <random>
 #include <functional>
-#include <optional>
-#include <memory>
-#include <vector>
 
-// #include "localizer/odom_model.h"
-// #include "localizer/particle.h"
-// #include "localizer/pose.h"
+#include <memory>
+
 #include "a_localizer/a_odom_model.hpp"
 #include "a_localizer/a_particle.hpp"
 #include "a_localizer/a_pose.hpp"
@@ -43,7 +33,10 @@ class EMCL : public rclcpp::Node
 public:
     EMCL(); // デフォルトコンストラクタ
     void process();
-    
+
+    int getOdomFreq();  // 制御周期(hz_)を返す関数
+    void   initialize();               // パーティクルの初期化
+
 private:
     // ----- 関数（引数あり）------
     // コールバック関数
@@ -58,7 +51,7 @@ private:
 
 
     // ----- 関数（引数なし）------
-    void   initialize();               // パーティクルの初期化
+
     void   reset_weight();             // 重みの初期化
     void   broadcast_odom_state();     // map座標系とodom座標系の関係を報告
     void   localize();                 // 自己位置推定
@@ -130,21 +123,15 @@ private:
     rclcpp::Node::SharedPtr private_nh_;
 
     // Subscriber
-    rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr sub_map_;
-    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_odom_;
-    rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr sub_laser_;
+
+    rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr sub_map_a_;
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_odom_a_;
+    rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr sub_laser_a_;
 
     // Publisher
-    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pub_estimated_pose_;
-    rclcpp::Publisher<geometry_msgs::msg::PoseArray>::SharedPtr pub_particle_cloud_;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pub_estimated_pose_a_;
+    rclcpp::Publisher<geometry_msgs::msg::PoseArray>::SharedPtr pub_particle_cloud_a_;
 
-    // ROS 各種オブジェクト
-    // nav_msgs::OccupancyGrid    map_;                // map_serverから受け取るマップ
-    // nav_msgs::Odometry         last_odom_;          // 最新のodometry
-    // nav_msgs::Odometry         prev_odom_;          // 1制御周期前のodometry
-    // sensor_msgs::LaserScan     laser_;              // レーザ値
-    // geometry_msgs::PoseStamped estimated_pose_msg_; // 推定位置
-    // geometry_msgs::PoseArray   particle_cloud_msg_; // パーティクルクラウド（パブリッシュ用）
 
     // ROS2 各種オブジェクト
     nav_msgs::msg::OccupancyGrid    map_;                // map_serverから受け取るマップ

@@ -8,6 +8,7 @@ emcl: mcl with expansion resetting
 // EMCL::EMCL():private_nh_("~"), engine_(seed_gen_())
 EMCL::EMCL(): Node("a_localizer") //,engine_(seed_gen_())
 {
+
     this->declare_parameter("hz", 10);                                    
     this->declare_parameter("particle_num", 420);
     this->declare_parameter("move_dish_th",0.025);
@@ -34,6 +35,7 @@ EMCL::EMCL(): Node("a_localizer") //,engine_(seed_gen_())
     this->declare_parameter("rf",0.13);
     this->declare_parameter("rr",0.2);
 
+
     // ROS2のパラメータの取得(EMCL)
     this -> get_parameter<bool>("flag_init_noise",flag_init_noise_);
     this -> get_parameter<bool>("flag_broadcast",flag_broadcast_);
@@ -54,7 +56,9 @@ EMCL::EMCL(): Node("a_localizer") //,engine_(seed_gen_())
     this -> get_parameter<double>("expansion_yaw_dev",expansion_yaw_dev_);
     this -> get_parameter<int>("laser_step",laser_step_);
     this -> get_parameter<double>("sensor_noise_ratio",sensor_noise_ratio_);
+
     this -> get_parameter("ignore_angle_range_list",ignore_angle_range_list_);     
+
 
     // ROS2のパラメータの取得(OdomModel)
     this -> get_parameter<double>("ff",ff_);
@@ -72,6 +76,7 @@ EMCL::EMCL(): Node("a_localizer") //,engine_(seed_gen_())
     odom_model_ = OdomModel(ff_, fr_, rf_, rr_);
 
     // Subscriber
+
     sub_map_a_   = this->create_subscription<nav_msgs::msg::OccupancyGrid>("/map",rclcpp::QoS(1).reliable(),std::bind(&EMCL::map_callback, this,std::placeholders::_1));
     sub_odom_a_  = this->create_subscription<nav_msgs::msg::Odometry>("/odom",rclcpp::QoS(1).reliable(),std::bind(&EMCL::odom_callback, this,std::placeholders::_1));
     sub_laser_a_ = this->create_subscription<sensor_msgs::msg::LaserScan>("/scan",rclcpp::QoS(1).reliable(),std::bind(&EMCL::laser_callback, this,std::placeholders::_1));
@@ -79,6 +84,7 @@ EMCL::EMCL(): Node("a_localizer") //,engine_(seed_gen_())
     // Publisher
     pub_estimated_pose_a_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("/estimated_pose",rclcpp::QoS(1).reliable());
     pub_particle_cloud_a_ = this->create_publisher<geometry_msgs::msg::PoseArray>("/particle_cloud",rclcpp::QoS(1).reliable());
+
     printf("Pub\n");
 }
 
@@ -116,6 +122,7 @@ void EMCL::laser_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
     printf("l_c\n");
 }
 
+
 // hz_を返す関数
 int EMCL::getOdomFreq() { return hz_; }
 
@@ -139,6 +146,7 @@ void EMCL::process()
         }
     }    
     printf("process ok \n");
+
 }
 
 // パーティクル，推定位置の初期化
@@ -151,7 +159,9 @@ void EMCL::initialize()
 
     for(int i=0; i<particle_num_; i++)
     {
+
         // printf("hoge 01\n");
+
         if(flag_init_noise_) // 初期位置近傍にパーティクルを配置
         {
             const double x   = norm_rv(init_x_,   init_x_dev_);
@@ -159,7 +169,9 @@ void EMCL::initialize()
             const double yaw = norm_rv(init_yaw_, init_yaw_dev_);
             particle.pose_.set(x, y, yaw);
             particle.pose_.normalize_angle();
+
             // printf("hoge 02\n");
+
         }
         else
         {
@@ -168,7 +180,9 @@ void EMCL::initialize()
             const double yaw = init_yaw_;
             particle.pose_.set(x, y, yaw);
             particle.pose_.normalize_angle();
+
             // printf("hoge 03\n");
+
         }
         particles_.push_back(particle);
     }
@@ -532,7 +546,9 @@ void EMCL::publish_estimated_pose()
     q.setRPY(0, 0, estimated_pose_.yaw());
     tf2::convert(q,estimated_pose_msg_.pose.orientation);
 
+
     pub_estimated_pose_a_->publish(estimated_pose_msg_);
+
 }
 
 // パーティクルクラウドのパブリッシュ
@@ -559,5 +575,6 @@ void EMCL::publish_particles()
         }
 
         pub_particle_cloud_a_->publish(particle_cloud_msg_);
+
     }
 }

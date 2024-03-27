@@ -5,6 +5,7 @@ emcl: mcl with expansion resetting
 #ifndef A_LOCALIZER_HPP
 #define A_LOCALIZER_HPP
 
+
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <nav_msgs/msg/occupancy_grid.hpp>
@@ -20,6 +21,7 @@ emcl: mcl with expansion resetting
 
 #include <random>
 #include <functional>
+
 #include <memory>
 
 #include "a_localizer/a_odom_model.hpp"
@@ -31,8 +33,10 @@ class EMCL : public rclcpp::Node
 public:
     EMCL(); // デフォルトコンストラクタ
     void process();
+
     int getOdomFreq();  // 制御周期(hz_)を返す関数
     void   initialize();               // パーティクルの初期化
+
 private:
     // ----- 関数（引数あり）------
     // コールバック関数
@@ -47,6 +51,7 @@ private:
 
 
     // ----- 関数（引数なし）------
+
     void   reset_weight();             // 重みの初期化
     void   broadcast_odom_state();     // map座標系とodom座標系の関係を報告
     void   localize();                 // 自己位置推定
@@ -118,6 +123,7 @@ private:
     rclcpp::Node::SharedPtr private_nh_;
 
     // Subscriber
+
     rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr sub_map_a_;
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_odom_a_;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr sub_laser_a_;
@@ -125,6 +131,7 @@ private:
     // Publisher
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pub_estimated_pose_a_;
     rclcpp::Publisher<geometry_msgs::msg::PoseArray>::SharedPtr pub_particle_cloud_a_;
+
 
     // ROS2 各種オブジェクト
     nav_msgs::msg::OccupancyGrid    map_;                // map_serverから受け取るマップ

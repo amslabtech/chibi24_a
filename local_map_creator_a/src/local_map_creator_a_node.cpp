@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
         //printf("-----loop start -----\n");
         if(local_map_creator_->get_flag_obs_poses())
         {
-            printf("update_map\n");
+            //printf("update_map\n");
             local_map_creator_->update_map();  // マップの更新
         }
             

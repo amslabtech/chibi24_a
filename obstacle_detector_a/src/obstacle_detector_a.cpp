@@ -119,16 +119,17 @@ void ObstacleDetector::scan_obstacle()
         //printf("start scan_loop\n");
         if(is_ignore_scan(laser_scan_.value().angle_min + (laser_scan_.value().angle_increment * i)))
         {
-            //printf("continue\n");
+            printf("continue\n");
             continue;
         }
-        if(laser_scan_.value().ranges[i] < ignore_distance_)
+        if(laser_scan_.value().ranges[i] > ignore_distance_) //符号逆じゃね？？？
         {
             //printf("start culclate\n");
             geometry_msgs::msg::Pose obs_pose;
             obs_pose.position.x = laser_scan_.value().ranges[i] * cos(laser_scan_.value().angle_min + laser_scan_.value().angle_increment * i);
             obs_pose.position.y = laser_scan_.value().ranges[i] * sin(laser_scan_.value().angle_min + laser_scan_.value().angle_increment * i);
             obstacle_pose_array_.poses.push_back(obs_pose);
+            printf("obs_pose.position. x:%lf, y:%lf\n", obs_pose.position.x, obs_pose.position.y);
             //printf("end culclate\n");
         }
     }

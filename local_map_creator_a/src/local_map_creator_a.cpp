@@ -75,8 +75,7 @@ void LocalMapCreator::process()
 void LocalMapCreator::update_map()
 {
     init_map(); // マップの初期化
-    printf("〜〜〜start update_map〜〜〜\n");
-
+    //printf("〜〜〜start update_map〜〜〜\n");
     for(const auto& obs_pose : obs_poses_.poses)
     {
         const double obs_x     = obs_pose.position.x;
@@ -84,18 +83,18 @@ void LocalMapCreator::update_map()
         const double obs_dist  = hypot(obs_y, obs_x);
         const double obs_angle = atan2(obs_y, obs_x);
 
-        /*printf("hz_ = %d\n",hz_);
-        printf("map_size = %lf\n",map_size_);
-        printf("map_reso = %lf\n",map_reso_);
+        //printf("hz_ = %d\n",hz_);
+        //printf("map_size = %lf\n",map_size_);
+        //printf("map_reso = %lf\n",map_reso_);
         printf("obs_x = %lf\n",obs_x);
         printf("obs_y = %lf\n",obs_y);
-        //printf("obs_dist = %lf\n",obs_dist); //だめ　0.001から変化しない。
+        printf("obs_dist = %lf\n",obs_dist); //だめ　0.001から変化しない。
         //printf("obs_angle = %lf\n",obs_angle); //ok
-        */
+
 
         for(double dist_from_start=0.0; (dist_from_start<obs_dist and in_map(dist_from_start, obs_angle)); dist_from_start+=map_reso_)
         {
-            printf("qawsedrftgyhujikolp;\n");
+            //printf("qawsedrftgyhujikolp;\n");
             const int grid_index = get_grid_index(dist_from_start, obs_angle);
             //printf("get_grid_index\n");
             local_map_.data[grid_index] = 0; //「空き」にする

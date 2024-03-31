@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
             //printf("flag is true\n");
             obstacle_detector->scan_obstacle();
             //printf("piblished1\n");
-            obstacle_detector->obstacle_pose_pub_->publish(obstacle_detector->obstacle_pose_array_);
+            obstacle_detector->obstacle_pose_pub_->publish(obstacle_detector->obstacle_pose_array_); //これができているのか？ぱっと見は問題なさそう
             //printf("published2\n");
         }
         rclcpp::spin_some(obstacle_detector);
@@ -34,5 +34,6 @@ int main(int argc, char* argv[])
         //printf("----------loop end----------\n");
     }
 
+    rclcpp::shutdown();//追加した（ないとctrl+cで止まらない）
     return 0;
 }

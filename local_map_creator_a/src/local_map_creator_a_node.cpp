@@ -29,5 +29,6 @@ int main(int argc, char* argv[])
         //printf("-----loop end -----\n"); 
     }
 
+    rclcpp::shutdown(); //追加した（ないとctrl+cでノードが止まらない）
     return 0;
 }

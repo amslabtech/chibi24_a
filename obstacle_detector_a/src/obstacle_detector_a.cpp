@@ -11,12 +11,15 @@ ObstacleDetector::ObstacleDetector() : Node("obstacle_detector_a")
     laser_step_ = this->declare_parameter<int>("laser_step",3);
     ignore_distance_ = this->declare_parameter<double>("ignore_distance",0.01);
 
-    range_list_1 = 1.5*PI/16.0;
-    range_list_2 = 5.0*PI/16.0;
-    range_list_3 = 10.0*PI/16.0;
+    range_list_1 = 1.5*M_PI/16.0; //PIではなく、M_PIにした。特に問題ない？
+    range_list_2 = 5.0*M_PI/16.0;
+    range_list_3 = 10.0*M_PI/16.0;
     
     ignore_angle_range_list_ = this->declare_parameter<std::vector<double>>("ignore_angle_range_list",{(range_list_1),(range_list_2),(range_list_3)});
-    robot_frame_ = this->declare_parameter<std::string>("base_link", "string");
+
+    //robot_frame_ = this->declare_parameter<std::string>("base_link", "string");//間違ってね？
+    robot_frame_ = this->declare_parameter<std::string>("robot_frame", "base_link"); //変更
+    get_parameter("robot_frame", robot_frame_);
 
     /*
     auto hz_ = this->get_parameter("hz").as_int();
@@ -51,7 +54,8 @@ ObstacleDetector::ObstacleDetector() : Node("obstacle_detector_a")
     obstacle_pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseArray>("/local_map/obstacle", rclcpp::QoS(1).reliable());
 
     //robot_frame_ = this->get_parameter<char*>("robot_frame" , robot_frame_); 
-    obstacle_pose_array_.header.frame_id = robot_frame_;
+    //obstacle_pose_array_.header.frame_id = robot_frame_; //問題なさそう
+    obstacle_pose_array_.header.frame_id = "base_link"; //変更。直接指定した
     //
 
 }
@@ -114,26 +118,34 @@ void ObstacleDetector::scan_obstacle()
     //printf("start scan_obstacle\n");
     obstacle_pose_array_.poses.clear();
     //printf("poses.clear\n");
-    for(int i=0; i<laser_scan_.value().ranges.size(); i+=laser_step_)
-    {
-        //printf("start scan_loop\n");
-        if(is_ignore_scan(laser_scan_.value().angle_min + (laser_scan_.value().angle_increment * i)))
+
+
+    // センサ情報（今回はlaser_scan）を取得できているかの確認用
+    // センサ情報取得前にアクセスしようとするとセグメンテーションフォルトが起こり，core dump（プロセス終了）する
+    // optional型のhas_value()を使用し，scan_を取得できたかの判定をすること
+    // 値を取得できた場合はtrue，取得できなかった場合はfalseを返すこと
+    if(laser_scan_.has_value()){ //追加
+        for(int i=0; i<laser_scan_.value().ranges.size(); i+=laser_step_)
         {
-            printf("continue\n");
-            continue;
+            //printf("start scan_loop\n");
+            if(is_ignore_scan(laser_scan_.value().angle_min + (laser_scan_.value().angle_increment * i)))
+            {
+                printf("continue\n");
+                continue;
+            }
+            if(laser_scan_.value().ranges[i] > ignore_distance_) //符号を変更。センサの値が極端に短いもの（ノイズ）は無視？値が0.001になる問題を解決
+            {
+                //printf("start culclate\n");
+                geometry_msgs::msg::Pose obs_pose;
+                obs_pose.position.x = laser_scan_.value().ranges[i] * cos(laser_scan_.value().angle_min + laser_scan_.value().angle_increment * i);
+                obs_pose.position.y = laser_scan_.value().ranges[i] * sin(laser_scan_.value().angle_min + laser_scan_.value().angle_increment * i);
+                obstacle_pose_array_.poses.push_back(obs_pose);
+                printf("obs_pose.position. x:%lf, y:%lf\n", obs_pose.position.x, obs_pose.position.y);
+                //printf("end culclate\n");
+            }
         }
-        if(laser_scan_.value().ranges[i] > ignore_distance_) //符号逆じゃね？？？
-        {
-            //printf("start culclate\n");
-            geometry_msgs::msg::Pose obs_pose;
-            obs_pose.position.x = laser_scan_.value().ranges[i] * cos(laser_scan_.value().angle_min + laser_scan_.value().angle_increment * i);
-            obs_pose.position.y = laser_scan_.value().ranges[i] * sin(laser_scan_.value().angle_min + laser_scan_.value().angle_increment * i);
-            obstacle_pose_array_.poses.push_back(obs_pose);
-            printf("obs_pose.position. x:%lf, y:%lf\n", obs_pose.position.x, obs_pose.position.y);
-            //printf("end culclate\n");
-        }
+        //printf("end scan_obstacle\n");
     }
-    //printf("end scan_obstacle\n");
 }
 
 /**
@@ -146,9 +158,11 @@ void ObstacleDetector::scan_obstacle()
 bool ObstacleDetector::is_ignore_scan(double angle)
 {
     //printf("start is_ignore_scan\n");
+    /*
     for(int i = 0; i < ignore_angle_range_list_.size(); i += 2)
     {
-        if((i == 0) && (ignore_angle_range_list_[i] < angle) && (angle < ignore_angle_range_list_[i + 1]))
+        //この場合分けだと一般化できない。もし、ignore_angle_range_list_が4つ以上入っていたら？
+        if((i == 0) && (ignore_angle_range_list_[i] < angle) && (angle < ignore_angle_range_list_[i + 1])) 
         {
             //printf("return true (i = 0)\n");
             return true;
@@ -159,6 +173,22 @@ bool ObstacleDetector::is_ignore_scan(double angle)
             return true;
         }
     }
+    */
+    //こちらに変更
+    for(int i = 0; i < ignore_angle_range_list_.size(); i += 2)
+    {
+        if(ignore_angle_range_list_[i] < angle && angle < ignore_angle_range_list_[i + 1]) 
+        {
+            //printf("return true (i = 0)\n");
+            return true;
+        }
+    }
+    if(ignore_angle_range_list_.size() %2 == 1 && ignore_angle_range_list_[ ignore_angle_range_list_.size()-1 ] < angle)
+    {
+        //printf("return true (i = 2)\n");
+        return true;
+    }
+
     //printf("return false\n");
     return false;
 }

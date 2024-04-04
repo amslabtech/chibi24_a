@@ -11,9 +11,9 @@ ObstacleDetector::ObstacleDetector() : Node("obstacle_detector_a")
     laser_step_ = this->declare_parameter<int>("laser_step",3);
     ignore_distance_ = this->declare_parameter<double>("ignore_distance",0.01);
 
-    range_list_1 = 1.5*M_PI/16.0; //PIではなく、M_PIにした。特に問題ない？
+    range_list_1 = 3.0*M_PI/16.0; //PIではなく、M_PIにした。特に問題ない？
     range_list_2 = 5.0*M_PI/16.0;
-    range_list_3 = 10.0*M_PI/16.0;
+    range_list_3 = 11.0*M_PI/16.0;
     
     ignore_angle_range_list_ = this->declare_parameter<std::vector<double>>("ignore_angle_range_list",{(range_list_1),(range_list_2),(range_list_3)});
 
@@ -180,17 +180,17 @@ bool ObstacleDetector::is_ignore_scan(double angle)
         if(ignore_angle_range_list_[i] < angle && angle < ignore_angle_range_list_[i + 1]) 
         {
             //printf("return true (i = 0)\n");
-            return true;
+            return false;
         }
     }
     if(ignore_angle_range_list_.size() %2 == 1 && ignore_angle_range_list_[ ignore_angle_range_list_.size()-1 ] < angle)
     {
         //printf("return true (i = 2)\n");
-        return true;
+        return false;
     }
 
     //printf("return false\n");
-    return false;
+    return true;
 }
 
 

@@ -66,6 +66,7 @@ void LocalMapCreator::process()
         auto node = rclcpp::Node::make_shared("obstacle_detector");
         rclcpp::spin_some(node);
         loop_rate.sleep(); // 周期が終わるまで待つ
+
     }
 }
 */

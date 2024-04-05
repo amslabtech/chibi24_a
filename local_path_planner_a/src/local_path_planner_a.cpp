@@ -14,6 +14,7 @@ using namespace std::chrono_literals;
 // コンストラクタ
 DWAPlanner::DWAPlanner() : Node("local_path_planner_a"), clock_(RCL_ROS_TIME)
 {
+    printf("yooooooooooo\n");
     // パラメータの取得 
     // パスを可視化するかの設定用
     declare_parameter<bool>("is_visible", true);
@@ -99,8 +100,14 @@ DWAPlanner::DWAPlanner() : Node("local_path_planner_a"), clock_(RCL_ROS_TIME)
     declare_parameter<double>("search_range", 0.95);    
     get_parameter("search_range", search_range_);
 
+
+    printf("konnnnnnnnnnnnn\n");
+
     // tf_buffer_を初期化する
-    tf_buffer_ = std::make_shared<tf2_ros::Buffer>(std::make_shared<rclcpp::Clock>(RCL_ROS_TIME));
+    tf_buffer_ = std::make_shared<tf2_ros::Buffer>(this->get_clock());
+
+
+    printf("yaaaaaaaaaaaaaaaa\n");
 
     // Subscriber
     //sub_local_goal_ = nh_.subscribe("/local_goal", 1, &DWAPlanner::local_goal_callback, this);
@@ -111,6 +118,14 @@ DWAPlanner::DWAPlanner() : Node("local_path_planner_a"), clock_(RCL_ROS_TIME)
     sub_obs_poses_ = this->create_subscription<geometry_msgs::msg::PoseArray>(
         "/local_map/obstacle", rclcpp::QoS(1).reliable(),
         std::bind(&DWAPlanner::obs_poses_callback, this, std::placeholders::_1));
+
+
+    printf("waaaaaaaaaaaaaaaaa\n");
+/*
+obstacle_pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseArray>("/local_map/obstacle", rclcpp::QoS(1).reliable());
+pub_local_goal_ = this->create_publisher<geometry_msgs::msg::PointStamped>(
+    "/local_goal", rclcpp::QoS(1).reliable());
+*/
 
     // Publisher
     //pub_cmd_speed_    = nh_.advertise<roomba_500driver_meiji::RoombaCtrl>("/roomba/control", 1);
@@ -255,13 +270,13 @@ std::vector<double> DWAPlanner::calc_final_input()
     // pathの可視化
     if(is_visible_)
     {
-        rclcpp::Time now = clock_.now();
+        rclcpp::Time Now =  get_clock()->now(); //clock_.now();
         for(i=0; i<trajectories.size(); i++)
         {
             if(i == index_of_max_score)
-                visualize_traj(trajectories[i], pub_optimal_path_, now);
+                visualize_traj(trajectories[i], pub_optimal_path_, Now);
             else
-                visualize_traj(trajectories[i], pub_predict_path_, now);
+                visualize_traj(trajectories[i], pub_predict_path_, Now);
         }
     }
 

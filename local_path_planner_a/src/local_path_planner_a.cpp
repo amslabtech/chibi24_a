@@ -60,7 +60,7 @@ DWAPlanner::DWAPlanner() : Node("local_path_planner_a"), clock_(RCL_ROS_TIME)
     // 停止状態か判断する閾値
     declare_parameter<double>("stop_vel_th", 0.1);    
     get_parameter("stop_vel_th", stop_vel_th_);
-    declare_parameter<double>("stop_yawrate_th", 0.3);    
+    declare_parameter<double>("stop_yawrate_th", 0.1);    
     get_parameter("stop_yawrate_th", stop_yawrate_th_);
 
     // 時間 [s]
@@ -96,8 +96,11 @@ DWAPlanner::DWAPlanner() : Node("local_path_planner_a"), clock_(RCL_ROS_TIME)
     get_parameter("goal_tolerance", goal_tolerance_);
     
     // 評価関数distで探索する範囲[m]
-    declare_parameter<int>("search_range", 0.95);    
+    declare_parameter<double>("search_range", 0.95);    
     get_parameter("search_range", search_range_);
+
+    // tf_buffer_を初期化する
+    tf_buffer_ = std::make_shared<tf2_ros::Buffer>(std::make_shared<rclcpp::Clock>(RCL_ROS_TIME));
 
     // Subscriber
     //sub_local_goal_ = nh_.subscribe("/local_goal", 1, &DWAPlanner::local_goal_callback, this);
@@ -125,6 +128,7 @@ DWAPlanner::DWAPlanner() : Node("local_path_planner_a"), clock_(RCL_ROS_TIME)
 // local_goalのコールバック関数
 void DWAPlanner::local_goal_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg)
 {
+    printf("local_goal_callback\n");
     geometry_msgs::msg::TransformStamped transform;
     try
     {
@@ -133,7 +137,7 @@ void DWAPlanner::local_goal_callback(const geometry_msgs::msg::PointStamped::Sha
     }
     catch(tf2::TransformException& ex)
     {
-        RCLCPP_WARN(this->get_logger(), "%s", ex.what());
+        RCLCPP_WARN(this->get_logger(), "トランスフォーム取得エラー：%s", ex.what());
         flag_local_goal_ = false;
         return;
     }
@@ -143,6 +147,7 @@ void DWAPlanner::local_goal_callback(const geometry_msgs::msg::PointStamped::Sha
 // obs_posesのコールバック関数
 void DWAPlanner::obs_poses_callback(const geometry_msgs::msg::PoseArray::SharedPtr msg)
 {
+    printf("obs_poses_callback\n");
     obs_poses_      = *msg;
     flag_obs_poses_ = true;
 }
@@ -174,8 +179,11 @@ void DWAPlanner::process()
 // ゴールに着くまでTrueを返す
 bool DWAPlanner::can_move()
 {
-    if(not (flag_local_goal_ and flag_obs_poses_)) return false; // msg受信済みか
-
+    if(!(flag_local_goal_ && flag_obs_poses_)) 
+    {
+        return false; // msg受信済みか
+    }
+    
     const double dx = local_goal_.point.x;
     const double dy = local_goal_.point.y;
     const double dist_to_goal = hypot(dx, dy); // 現在位置からゴールまでの距離

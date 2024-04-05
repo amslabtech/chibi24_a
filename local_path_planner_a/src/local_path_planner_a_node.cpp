@@ -3,8 +3,11 @@
 //===== メイン関数 =====
 int main(int argc, char* argv[])
 {
+    //printf("start\n");
     rclcpp::init(argc, argv); // ノードの初期化
     auto  dwa = std::make_shared<DWAPlanner>();
+
+    //printf("create_dwa\n");
 
     rclcpp::Rate loop_rate(dwa->get_freq()); // 制御周波数の設定
     

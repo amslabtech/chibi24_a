@@ -82,7 +82,7 @@ private:
 
     // ----- 変数 -----
     bool   is_visible_;         // パスを可視化するかの設定用
-    int    hz_;                 // ループ周波数
+    int    hz_ = 10;                 // ループ周波数
     int    mode_;
     double max_vel_;            // 最高並進速度 [m/s]（計算用）
     double max_vel1_;           // 最高並進速度 [m/s]（平常時）

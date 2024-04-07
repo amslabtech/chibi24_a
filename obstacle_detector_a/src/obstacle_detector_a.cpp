@@ -180,7 +180,6 @@ bool ObstacleDetector::is_ignore_scan(double angle)
         if(ignore_angle_range_list_[i] < angle && angle < ignore_angle_range_list_[i + 1]) 
         {
             //printf("return true (i = 0)\n");
-            //return false;
             return true;
         }
     }

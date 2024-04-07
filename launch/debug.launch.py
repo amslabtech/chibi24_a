@@ -6,31 +6,31 @@ def generate_launch_description():
         Node(
             package='obstacle_detector_a',
             executable='obstacle_detector_a_node',
-            output="screen",
+            #output="screen",
             parameters=[{'use_sim_time':True}],
         ),
         Node(
             package='a_localizer',
             executable='a_localizer_node',
-            output="screen",
+            #output="screen",
             parameters=[{'use_sim_time':True}],
         ),
         Node(
             package='global_path_planner_a',
             executable='global_path_planner_a_node',
-            output="screen",
+            #output="screen",
             parameters=[{'use_sim_time':True}],
         ),
         Node(
             package='local_goal_creator_a',
             executable='local_goal_creator_a_node',
-            output="screen",
+            #output="screen",
             parameters=[{'use_sim_time':True}],
         ),
         Node(
             package='local_map_creator_a',
             executable='local_map_creator_a_node',
-            output="screen",
+            #output="screen",
             parameters=[{'use_sim_time':True}],
         ),
         Node(

@@ -2,6 +2,7 @@
 #define LOCAL_GOAL_CREATOR_A_HPP
 
 #include <rclcpp/rclcpp.hpp>
+#include <memory>
 #include <nav_msgs/msg/path.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/point_stamped.hpp>

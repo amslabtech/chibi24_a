@@ -9,11 +9,10 @@ int main(int argc, char* argv[])
 
     printf("create_dwa\n");
 
-    rclcpp::Rate loop_rate(dwa->get_freq()); // 制御周波数の設定
-    
+    rclcpp::Rate loop_rate(dwa->get_freq()); // 制御周波数の設定    
     while(rclcpp::ok())
     {
-        printf("yobareta\n");
+        //printf("yobareta\n");
         dwa->process();
         rclcpp::spin_some(dwa);   // コールバック関数の実行
         loop_rate.sleep(); // 周期が終わるまで待つ

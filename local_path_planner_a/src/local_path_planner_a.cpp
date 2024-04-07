@@ -14,7 +14,6 @@ using namespace std::chrono_literals;
 // コンストラクタ
 DWAPlanner::DWAPlanner() : Node("local_path_planner_a"), clock_(RCL_ROS_TIME)
 {
-    printf("yooooooooooo\n");
     // パラメータの取得 
     // パスを可視化するかの設定用
     declare_parameter<bool>("is_visible", true);
@@ -101,13 +100,9 @@ DWAPlanner::DWAPlanner() : Node("local_path_planner_a"), clock_(RCL_ROS_TIME)
     get_parameter("search_range", search_range_);
 
 
-    printf("konnnnnnnnnnnnn\n");
-
-    // tf_buffer_を初期化する
-    tf_buffer_ = std::make_shared<tf2_ros::Buffer>(this->get_clock());
-
-
-    printf("yaaaaaaaaaaaaaaaa\n");
+    // tf_buffer_とtf_listenerを初期化する
+    tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
+    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 
     // Subscriber
     //sub_local_goal_ = nh_.subscribe("/local_goal", 1, &DWAPlanner::local_goal_callback, this);
@@ -116,11 +111,9 @@ DWAPlanner::DWAPlanner() : Node("local_path_planner_a"), clock_(RCL_ROS_TIME)
         "/local_goal", rclcpp::QoS(1).reliable(),
         std::bind(&DWAPlanner::local_goal_callback, this, std::placeholders::_1));
     sub_obs_poses_ = this->create_subscription<geometry_msgs::msg::PoseArray>(
-        "/local_map/obstacle", rclcpp::QoS(1).reliable(),
+        "/local_map/obstacle", rclcpp::QoS(1).reliable(), 
         std::bind(&DWAPlanner::obs_poses_callback, this, std::placeholders::_1));
 
-
-    printf("waaaaaaaaaaaaaaaaa\n");
 /*
 obstacle_pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseArray>("/local_map/obstacle", rclcpp::QoS(1).reliable());
 pub_local_goal_ = this->create_publisher<geometry_msgs::msg::PointStamped>(
@@ -138,21 +131,42 @@ pub_local_goal_ = this->create_publisher<geometry_msgs::msg::PointStamped>(
     pub_optimal_path_ = this->create_publisher<nav_msgs::msg::Path>(
         "/optimal_local_path", rclcpp::QoS(1).reliable());
 
+    // timer
+    //timer_ = this->create_wall_timer(std::chrono::milliseconds(
+    //  static_cast<int>(1.0 / hz_ * 1e3)), std::bind(&DWAPlanner::timer_callback, this));
 }
 
+/*
+エラー内容
+unable to obtain a transform : Lookup would require extrapolation into the past. 
+Requested time 1709795605.433078 but the earliest data is at time 1712475294.363233, when looking up transform from frame [map] to frame [base_link]
+
+(map) bagファイルを元に作成したlocal_goal
+/clockの中身を確認。この時間はuse_sim_time:=Trueにより、bagファイルに記録された時間になっている。ex)1709795605.433078
+
+(base_link)
+rviz2に表示される時間ROS_Timeは現在の時間になっている。ex)1712475294.363233
+
+これらの時刻の整合性が取れていないため、上記のエラーが表示されているのだと考えられる。実環境だと動くかも？
+
+*/
+
+
+
 // local_goalのコールバック関数
+// local_goalはマップ座標系(map)だが、実際の移動に合わせるためにルンバ座標系(base_link)に変換する処理を行う
 void DWAPlanner::local_goal_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg)
 {
     printf("local_goal_callback\n");
     geometry_msgs::msg::TransformStamped transform;
     try
     {
-        transform = tf_buffer_->lookupTransform(robot_frame_, "map", tf2::TimePointZero); //this->get_clock->nowかも
+        transform = tf_buffer_->lookupTransform(robot_frame_, "map", tf2::TimePointZero); //rclcpp::Time(0)でも可能かも？この書き方は問題ない。
         flag_local_goal_ = true;
     }
     catch(tf2::TransformException& ex)
     {
-        RCLCPP_WARN(this->get_logger(), "トランスフォーム取得エラー：%s", ex.what());
+        RCLCPP_WARN(this->get_logger(), "unable to obtain a transform : %s", ex.what());
         flag_local_goal_ = false;
         return;
     }
@@ -162,7 +176,7 @@ void DWAPlanner::local_goal_callback(const geometry_msgs::msg::PointStamped::Sha
 // obs_posesのコールバック関数
 void DWAPlanner::obs_poses_callback(const geometry_msgs::msg::PoseArray::SharedPtr msg)
 {
-    printf("obs_poses_callback\n");
+    //printf("obs_poses_callback\n");
     obs_poses_      = *msg;
     flag_obs_poses_ = true;
 }
@@ -173,11 +187,17 @@ int DWAPlanner::get_freq()
     return hz_;
 }
 
+/*
+void DWAPlanner::timer_callback()
+{
+    process();
+}
+*/
+
 // 唯一，main文で実行する関数
 void DWAPlanner::process()
 {
-    auto tf_listener_ =
-        std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+    //auto tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_); //こいつが原因 class内で定義した
         //tf2_ros::TransformListener tf_listener(tf_buffer_);
 
     if(can_move())
@@ -270,13 +290,13 @@ std::vector<double> DWAPlanner::calc_final_input()
     // pathの可視化
     if(is_visible_)
     {
-        rclcpp::Time Now =  get_clock()->now(); //clock_.now();
+        rclcpp::Time now =  get_clock()->now(); //clock_.now();
         for(i=0; i<trajectories.size(); i++)
         {
             if(i == index_of_max_score)
-                visualize_traj(trajectories[i], pub_optimal_path_, Now);
+                visualize_traj(trajectories[i], pub_optimal_path_, now);
             else
-                visualize_traj(trajectories[i], pub_predict_path_, Now);
+                visualize_traj(trajectories[i], pub_predict_path_, now);
         }
     }
 

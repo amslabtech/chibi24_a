@@ -70,11 +70,13 @@ Astar::Astar() : Node("global_path_planner_a"),  clock_(RCL_ROS_TIME)
       
 }
 
+/*
 // timerのコールバック関数（一定間隔でprocessを実行）
 void Astar::timer_callback()
 {
     process();
 }
+*/
 
 // mapのコールバック関数
 void Astar::map_callback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg)  //マップの読み込み

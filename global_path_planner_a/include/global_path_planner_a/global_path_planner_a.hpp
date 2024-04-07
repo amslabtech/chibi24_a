@@ -40,7 +40,7 @@ class Astar : public rclcpp::Node
     private:
         void planning();  //経路計画
 
-        void timer_callback();
+        //void timer_callback();
         void map_callback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);  //マップの読み込み
 
 

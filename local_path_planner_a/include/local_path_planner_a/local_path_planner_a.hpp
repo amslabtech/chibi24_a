@@ -17,7 +17,6 @@ speed         : 速度の総称(vel, yawrate)
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <geometry_msgs/msg/point_stamped.hpp>
-#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/pose_array.hpp>
 #include <nav_msgs/msg/path.hpp>
 #include <tf2_ros/transform_listener.h>
@@ -60,6 +59,7 @@ private:
     // コールバック関数
     void local_goal_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg);
     void obs_poses_callback(const geometry_msgs::msg::PoseArray::SharedPtr msg);
+    //void timer_callback();
 
     // その他の関数
     void   roomba_control(const double velocity, const double yawrate);                                         // Roombaの制御入力
@@ -129,6 +129,7 @@ private:
     double weight_vel_;
 
     //rclcpp::TimerBase::SharedPtr timer_;
+    
     rclcpp::Clock clock_;
 
     // ----- その他のオブジェクト -----
@@ -153,7 +154,8 @@ private:
     geometry_msgs::msg::PoseArray    obs_poses_;  // 障害物のポーズの配列
 
     // tf
-    std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
 
     // 制御入力
     roomba_500driver_meiji::msg::RoombaCtrl cmd_speed_;

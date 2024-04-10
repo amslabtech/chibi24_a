@@ -175,6 +175,11 @@ bool ObstacleDetector::is_ignore_scan(double angle)
     }
     */
     //こちらに変更
+
+    /*
+      aaaaaaaaaaa
+      bbbbbbbbbbb
+      */
     for(int i = 0; i < ignore_angle_range_list_.size(); i += 2)
     {
         if(ignore_angle_range_list_[i] < angle && angle < ignore_angle_range_list_[i + 1]) 

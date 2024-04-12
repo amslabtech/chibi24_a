@@ -9,13 +9,17 @@ ObstacleDetector::ObstacleDetector() : Node("obstacle_detector_a")
 
     hz_ = this->declare_parameter<int>("hz",10);
     laser_step_ = this->declare_parameter<int>("laser_step",3);
-    ignore_distance_ = this->declare_parameter<double>("ignore_distance",0.01);
+    ignore_distance_ = this->declare_parameter<double>("ignore_distance",0.30);
 
-    range_list_1 = 3.0*M_PI/16.0; //PIではなく、M_PIにした。特に問題ない？
-    range_list_2 = 5.0*M_PI/16.0;
-    range_list_3 = 11.0*M_PI/16.0;
-    
-    ignore_angle_range_list_ = this->declare_parameter<std::vector<double>>("ignore_angle_range_list",{(range_list_1),(range_list_2),(range_list_3)});
+    range_list_1 = 0.0*M_PI/180.0; //PIではなく、M_PIにした。特に問題ない？
+    range_list_2 = 5.0*M_PI/180.0;
+    range_list_3 = 80.0*M_PI/180.0;
+    range_list_4 = 100.0*M_PI/180.0;
+    range_list_5 = 170.0*M_PI/180.0;
+    range_list_6 = 190.0*M_PI/180.0;
+    range_list_7 = 265.0*M_PI/180.0;
+
+    //ignore_angle_range_list_ = this->declare_parameter<std::vector<double>>("ignore_angle_range_list",{(range_list_1),(range_list_2),(range_list_3),(range_list_4),(range_list_5), (range_list_6),(range_list_7)});
 
     //robot_frame_ = this->declare_parameter<std::string>("base_link", "string");//間違ってね？
     robot_frame_ = this->declare_parameter<std::string>("robot_frame", "base_link"); //変更
@@ -128,11 +132,15 @@ void ObstacleDetector::scan_obstacle()
         for(int i=0; i<laser_scan_.value().ranges.size(); i+=laser_step_)
         {
             //printf("start scan_loop\n");
+            /*
             if(is_ignore_scan(laser_scan_.value().angle_min + (laser_scan_.value().angle_increment * i)))
             {
                 printf("continue\n");
                 continue;
             }
+            */
+            
+            
             if(laser_scan_.value().ranges[i] > ignore_distance_) //符号を変更。センサの値が極端に短いもの（ノイズ）は無視？値が0.001になる問題を解決
             {
                 //printf("start culclate\n");
@@ -140,7 +148,7 @@ void ObstacleDetector::scan_obstacle()
                 obs_pose.position.x = laser_scan_.value().ranges[i] * cos(laser_scan_.value().angle_min + laser_scan_.value().angle_increment * i);
                 obs_pose.position.y = laser_scan_.value().ranges[i] * sin(laser_scan_.value().angle_min + laser_scan_.value().angle_increment * i);
                 obstacle_pose_array_.poses.push_back(obs_pose);
-                printf("obs_pose.position. x:%lf, y:%lf\n", obs_pose.position.x, obs_pose.position.y);
+                //printf("obs_pose.position. x:%lf, y:%lf\n", obs_pose.position.x, obs_pose.position.y);
                 //printf("end culclate\n");
             }
         }
@@ -176,10 +184,6 @@ bool ObstacleDetector::is_ignore_scan(double angle)
     */
     //こちらに変更
 
-    /*
-      aaaaaaaaaaa
-      bbbbbbbbbbb
-      */
     for(int i = 0; i < ignore_angle_range_list_.size(); i += 2)
     {
         if(ignore_angle_range_list_[i] < angle && angle < ignore_angle_range_list_[i + 1]) 

@@ -17,7 +17,7 @@ Astar::Astar() : Node("global_path_planner_a"),  clock_(RCL_ROS_TIME)
 
     declare_parameter<int>("hz", 10); //hz
     get_parameter("hz", hz_);
-    declare_parameter<bool>("test_show", true); //デバッグ用
+    declare_parameter<bool>("test_show", false); //デバッグ用
     get_parameter("test_show", test_show_);
     declare_parameter<double>("sleep_time", 0.005);
     get_parameter("sleep_time", sleep_time_);
@@ -81,7 +81,7 @@ void Astar::timer_callback()
 // mapのコールバック関数
 void Astar::map_callback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg)  //マップの読み込み
 {
-    printf("map_callback\n");
+    //printf("map_callback\n");
     map_ = *msg; //マップを取得
     origin_x_ = map_.info.origin.position.x;
     origin_y_ = map_.info.origin.position.y;
@@ -114,7 +114,7 @@ void Astar::obs_expander()
     }
     // new_mapをpublish
     //pub_new_map_.publish(new_map_);
-    printf("obs_expand : finish!\n");
+    //printf("obs_expand : finish!\n");
     pub_new_map_->publish(new_map_);
 }
 
@@ -473,10 +473,10 @@ void Astar::planning()
     begin_ = clock_.now();
     //printf("clock_.now() = %f\n", clock_.now().seconds()); // add
     const int total_phase = way_points_x_.size();
-    printf("total_phase = %d\n", total_phase); // add
+    //printf("total_phase = %d\n", total_phase); // add
     for(int phase=0; phase<total_phase-1; phase++)
     {
-        printf("phase = %d\n", phase); // add
+        //printf("phase = %d\n", phase); // add
         open_list_.clear();
         close_list_.clear();
 
@@ -528,7 +528,7 @@ void Astar::process()
     RCLCPP_INFO(get_logger(), "NOW LOADING...");
     }else
     {
-        printf("start\n");
+        //printf("start\n");
         obs_expander(); //壁の判定
         planning(); //グローバルパスの作成
     }

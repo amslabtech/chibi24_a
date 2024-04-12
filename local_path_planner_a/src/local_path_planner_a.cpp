@@ -34,11 +34,11 @@ DWAPlanner::DWAPlanner() : Node("local_path_planner_a"), clock_(RCL_ROS_TIME)
     get_parameter("max_vel2", max_vel2_);
     declare_parameter<double>("avoid_thres_vel", 0.25); //[m/s]（回避中か判断する閾値）
     get_parameter("avoid_thres_vel", avoid_thres_vel_);
-    declare_parameter<double>("mix_vel", 0.0); //[m/s]
+    declare_parameter<double>("min_vel", 0.15); //[m/s] //0.0あげてみた
     get_parameter("min_vel", min_vel_);
-    declare_parameter<double>("max_yawrate1", 1.0); //[rad/s]（平常時）
+    declare_parameter<double>("max_yawrate1", 0.8); //[rad/s]（平常時）//1.0
     get_parameter("max_yawrate1", max_yawrate1_);
-    declare_parameter<double>("max_yawrate2", 0.55); //[rad/s]（減速時）
+    declare_parameter<double>("max_yawrate2", 0.45); //[rad/s]（減速時）//0.55 0.75
     get_parameter("max_yawrate2", max_yawrate2_);
     declare_parameter<double>("turn_thres_yawrate", 0.25); //[rad/s]（旋回中か判断する閾値）
     get_parameter("turn_thres_yawrate", turn_thres_yawrate_);
@@ -66,27 +66,27 @@ DWAPlanner::DWAPlanner() : Node("local_path_planner_a"), clock_(RCL_ROS_TIME)
     // 時間 [s]
     declare_parameter<double>("dt", 0.1);    
     get_parameter("dt", dt_);
-    declare_parameter<double>("predict_time1", 2.0);    
+    declare_parameter<double>("predict_time1", 4.0); //2.0    
     get_parameter("predict_time1", predict_time1_);
-    declare_parameter<double>("predict_time2", 6.0);    
+    declare_parameter<double>("predict_time2", 6.0); //6.0    
     get_parameter("predict_time2", predict_time2_);
 
     // 機体サイズ（半径）[m]
-    declare_parameter<double>("roomba_radius", 0.25);    
+    declare_parameter<double>("roomba_radius", 0.20); // 0.25
     get_parameter("roomba_radius", roomba_radius_);
-    declare_parameter<double>("radius_margin1", 0.1); //（平常時）
+    declare_parameter<double>("radius_margin1", 0.1); //（平常時）//0.1
     get_parameter("radius_margin1", radius_margin1_);
-    declare_parameter<double>("radius_margin2", 0.04); //（減速時）
+    declare_parameter<double>("radius_margin2", 0.04); //（減速時）//0.04
     get_parameter("radius_margin2", radius_margin2_);
 
     // 重み定数 [-]
-    declare_parameter<double>("weight_heading1", 0.85); //（平常時）    
+    declare_parameter<double>("weight_heading1", 0.8); //（平常時）  //0.85  
     get_parameter("weight_heading1", weight_heading1_);
-    declare_parameter<double>("weight_heading2", 0.7);  //（減速時）   
+    declare_parameter<double>("weight_heading2", 0.65);  //（減速時） //0.7  
     get_parameter("weight_heading2", weight_heading2_);
-    declare_parameter<double>("weight_dist1", 1.5); //（平常時)
+    declare_parameter<double>("weight_dist1", 1.1); //（平常時) 1.5
     get_parameter("weight_dist1", weight_dist1_);
-    declare_parameter<double>("weight_dist2", 0.8); //（減速時）
+    declare_parameter<double>("weight_dist2", 0.7); //（減速時） 0.8
     get_parameter("weight_dist2", weight_dist2_);
     declare_parameter<double>("weight_vel", 0.6);    
     get_parameter("weight_vel", weight_vel_);  
@@ -310,7 +310,7 @@ void DWAPlanner::change_mode()
         mode_log_.push_back(2.0); // 減速モード
     else
         mode_log_.push_back(2.0); // 常に減速モード
-        // mode_log_.push_back(1.0);
+        //mode_log_.push_back(1.0);
 
     if(mode_log_.size() > hz_*mode_log_time_)
         mode_log_.erase(mode_log_.begin());

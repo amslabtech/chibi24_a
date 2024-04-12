@@ -22,7 +22,7 @@ LocalGoalCreator::LocalGoalCreator() : Node("local_goal_creator_a"), clock_(RCL_
     get_parameter("index_step", index_step_);
     declare_parameter<int>("goal_index", 50); // グローバルパス内におけるローカルゴールのインデックス
     get_parameter("goal_index", goal_index_);
-    declare_parameter<double>("target_dist_to_goal", 3.0); // 現在位置-ゴール間の距離 [m]
+    declare_parameter<double>("target_dist_to_goal", 2.5); // 現在位置-ゴール間の距離 [m] //3.0
     get_parameter("target_dist_to_goal", target_dist_to_goal_);
     
     // frame idの設定

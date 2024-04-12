@@ -45,6 +45,10 @@ class ObstacleDetector : public rclcpp::Node
         double range_list_1;
         double range_list_2;
         double range_list_3;
+        double range_list_4;
+        double range_list_5;
+        double range_list_6;
+        double range_list_7;
 
         //ros::NodeHandle nh_;
         //std::shared_ptr<rclcpp::Node> nh_; //消した

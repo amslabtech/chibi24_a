@@ -9,7 +9,7 @@ ObstacleDetector::ObstacleDetector() : Node("obstacle_detector_a")
 
     hz_ = this->declare_parameter<int>("hz",10);
     laser_step_ = this->declare_parameter<int>("laser_step",3);
-    ignore_distance_ = this->declare_parameter<double>("ignore_distance",0.30);
+    ignore_distance_ = this->declare_parameter<double>("ignore_distance",0.25);
 
     range_list_1 = 0.0*M_PI/180.0; //PIではなく、M_PIにした。特に問題ない？
     range_list_2 = 5.0*M_PI/180.0;

@@ -28,9 +28,9 @@ DWAPlanner::DWAPlanner() : Node("local_path_planner_a"), clock_(RCL_ROS_TIME)
     get_parameter("robot_frame", robot_frame_);
 
     // 速度制限
-    declare_parameter<double>("max_vel1", 0.35); // [m/s]（平常時）
+    declare_parameter<double>("max_vel1", 0.35); // [m/s]（平常時）//0.35
     get_parameter("max_vel1", max_vel1_);
-    declare_parameter<double>("max_vel2", 0.25); //[m/s]（減速時）
+    declare_parameter<double>("max_vel2", 0.25); //[m/s]（減速時）//0.25
     get_parameter("max_vel2", max_vel2_);
     declare_parameter<double>("avoid_thres_vel", 0.25); //[m/s]（回避中か判断する閾値）
     get_parameter("avoid_thres_vel", avoid_thres_vel_);
@@ -42,7 +42,7 @@ DWAPlanner::DWAPlanner() : Node("local_path_planner_a"), clock_(RCL_ROS_TIME)
     get_parameter("max_yawrate2", max_yawrate2_);
     declare_parameter<double>("turn_thres_yawrate", 0.25); //[rad/s]（旋回中か判断する閾値）
     get_parameter("turn_thres_yawrate", turn_thres_yawrate_);
-    declare_parameter<double>("mode_log_time", 5.0);
+    declare_parameter<double>("mode_log_time", 6.0); //5.0
     get_parameter("mode_log_time", mode_log_time_);
 
     // 加速度制限
@@ -92,7 +92,7 @@ DWAPlanner::DWAPlanner() : Node("local_path_planner_a"), clock_(RCL_ROS_TIME)
     get_parameter("weight_vel", weight_vel_);  
     
     // 許容誤差 [m]
-    declare_parameter<double>("goal_tolerance", 0.5);    
+    declare_parameter<double>("goal_tolerance", 1.0);    
     get_parameter("goal_tolerance", goal_tolerance_);
     
     // 評価関数distで探索する範囲[m]

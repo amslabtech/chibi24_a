@@ -25,7 +25,8 @@ EMCL::EMCL(): Node("a_localizer") //,engine_(seed_gen_())
     this->declare_parameter("expansion_yaw_dev",0.01);
     this->declare_parameter("laser_step",10);
     this->declare_parameter("sensor_noise_ratio",0.03);
-    this->declare_parameter("ignore_angle_range_list",std::vector<double>({0.0,0.0,0.0}));
+    this->declare_parameter("ignore_angle_range_list",std::vector<double>({M_PI*1.5/16.0, M_PI*5.0/16.0, M_PI*10.0/16.0}));
+    //this->declare_parameter("ignore_angle_range_list",std::vector<double>({M_PI*0.0/180, M_PI*5.0/180, M_PI*80.0/180, M_PI*100.0/180, M_PI*170.0/180, M_PI*190.0/180, M_PI*265.0/180}));
     this->declare_parameter("flag_init_noise",true);
     this->declare_parameter("flag_broadcast",true);
     this->declare_parameter("is_visible",true);
